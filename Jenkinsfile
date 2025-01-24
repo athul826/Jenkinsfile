@@ -7,7 +7,7 @@ pipeline {
     }
     
     stages {
-        stage('Clone Repository') {
+        stage('Clone Repository and analysis sonar scanner') {
             steps {
                 git branch: 'main', url: 'https://github.com/athul826/spring-petclinic.git'
             }
