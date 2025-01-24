@@ -1,35 +1,29 @@
 pipeline {
-    agent {label 'slave-1-node'}
-    stages {
-        stage ('git checkout') {
-            steps {
-                echo 'continous downloading'
-            }
-        }
-        stage ('contionus build') {
-            steps {
-                echo "continous building is happening here"
-                sh 'mvn clean package -DskipTests'
-            }
-        }
-        stage ('Test') {
-            steps {
-                echo "junit test is happening here"
-            }
-        }
-        stage ('application-deploy') {
-            steps {
-                echo "application deployin on tomcat server"
-            }
-        }
+    agent any
+    
+    tools {
+        maven 'maven3'
+     //   jdk 'Java 11'
     }
-
-    post {
-        success {
-            echo 'pipeline has been successfuly completed!'
+    
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git branch: 'main', url: 'https://github.com/athul826/spring-petclinic.git'
+            }
         }
-        failure {
-            echo 'pipleline has been failed.'
+        
+        stage('SonarQube Analysis') {
+            steps {
+                withCredentials([string(credentialsId: 'sonar-new', variable: 'SONAR_TOKEN')]) {
+                    sh '''
+                        mvn clean verify sonar:sonar \
+                        -Dsonar.projectKey=petclinic \
+                        -Dsonar.host.url=http://54.226.254.195:9000 \
+                        -Dsonar.login=${SONAR_TOKEN}
+                    '''
+                }
+            }
         }
     }
 }
