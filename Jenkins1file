@@ -1,0 +1,19 @@
+pipeline {
+    agent any
+    parmaters {
+        string( name: 'athul', defaultValue: 'place', description: 'chooce the place from list')
+        choice( name: 'city', choices: ['vadakara', 'kozhikode', 'banagalore'], description: 'chooce form the list')
+    }
+    stages {
+        stage ('git checkout') {
+            steps {
+                echo "building steps from city ${params.athul}"
+            }    
+        }
+        stage {
+            steps (git build) {
+                echo "building from code ${params.city}"
+            }
+        }
+    }
+}
